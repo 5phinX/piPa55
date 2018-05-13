@@ -2,6 +2,13 @@
 
 cd /root/piPa55
 
+# Check is the USB is configured
+if [ -f "/tmp/usb_gadget_configured" ]; then
+  echo "USB configured" > /dev/null
+else
+  ./usb_setup.sh
+fi
+
 kill $(cat /tmp/piPa55_httpd.pid)
 kill $(cat /tmp/piPa55_keyboard.pid)
 

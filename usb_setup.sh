@@ -33,7 +33,10 @@ echo 8 > functions/hid.0/report_length
 echo -ne \\x05\\x01\\x09\\x06\\xa1\\x01\\x05\\x07\\x19\\xe0\\x29\\xe7\\x15\\x00\\x25\\x01\\x75\\x01\\x95\\x08\\x81\\x02\\x95\\x01\\x75\\x08\\x81\\x03\\x95\\x05\\x75\\x01\\x05\\x08\\x19\\x01\\x29\\x05\\x91\\x02\\x95\\x01\\x75\\x03\\x91\\x03\\x95\\x06\\x75\\x08\\x15\\x00\\x25\\x65\\x05\\x07\\x19\\x00\\x29\\x65\\x81\\x00\\xc0 > functions/hid.0/report_desc
 
 # USB ethernet
-echo "14:$(tr -cd '[:xdigit:]' < /dev/urandom | fold -w2 | head -n5 | tr '\n' ':' | cut -c-14)" > functions/ecm.0/dev_addr # Set random MAC
+echo "14:6D:5A:CB:84:70" > functions/ecm.0/dev_addr # Set MAC
+# MAC generated using this command:
+# $(tr -cd '[:xdigit:]' < /dev/urandom | fold -w2 | head -n5 | tr '\n' ':' | cut -c-14)
+
 
 # Create a config
 mkdir -p configs/c.1/strings/0x409
@@ -49,7 +52,7 @@ ls /sys/class/udc > UDC
 cd $CURDIR
 
 # Configure DHCP server for USB ethernet
-dnsmasq -C ./dhcpd.conf
+dnsmasq -C ./dhcpd.conf 
 
 # Set the configure flag
 echo 1 > /tmp/usb_gadget_configured
