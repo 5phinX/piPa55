@@ -2,6 +2,15 @@
 <html>
   <head>
     <title>Hello World</title>
+    <style type="text/css">
+      .error_message {
+        background : red;
+      }
+      .success_message {
+        background : green;
+        color      : white;
+      }
+    </style>
   </head>
   <body>
     <messages>
@@ -31,7 +40,8 @@
       <input name="alpha" type="checkbox" value="alpha" checked="checked" disabled="disabled" /> Letters<br />
       <input name="numeric" type="checkbox" value="numeric" /> Numbers<br />
       <input name="special" type="checkbox" value="special" /> Special characters<br />
-      <input name="length" type="number" min="8" max="128" value="8" />
+      Password length: <input name="length" type="number" min="8" max="128" value="8" /><br />
+      <input name="key_after_pass" type="checkbox" checked="checked" value="enter" /> Press enter after the password<br />
       <input name="genPass" type="Submit" value="Generate password" />
     </form>
 
