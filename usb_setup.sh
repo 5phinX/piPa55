@@ -50,3 +50,6 @@ cd $CURDIR
 
 # Configure DHCP server for USB ethernet
 dnsmasq -C ./dhcpd.conf
+
+# Set the configure flag
+echo 1 > /tmp/usb_gadget_configured

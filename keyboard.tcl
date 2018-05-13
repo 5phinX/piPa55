@@ -39,6 +39,7 @@ proc processData {fd} {
           set username [gets $fin]
           set separator [gets $fin]
           set password [gets $fin]
+          set key_after [gets $fin]
           close $fin
           # Type in all the data
           if { $separator != "none" } {
@@ -50,17 +51,20 @@ proc processData {fd} {
           for { set i 0 } { $i < [string length $password] } { incr i } {
             keyPress $fd [string index $password $i]
           }
-          keyPress $fd "enter"
+          if { $key_after != "none" } {
+            keyPress $fd $key_after
+          }
         }
       } else { ;# Try default password
-      if { [file exists "default_pass"] } {
-        set fin [open "default_pass" r]
-        set password [gets $fin]
-        close $fin
-        for { set i 0 } { $i < [string length $password] } { incr i } {
-          keyPress $fd [string index $password $i]
+        if { [file exists "default_pass"] } {
+          set fin [open "default_pass" r]
+          set password [gets $fin]
+          close $fin
+          for { set i 0 } { $i < [string length $password] } { incr i } {
+            keyPress $fd [string index $password $i]
+          }
+          keyPress $fd "enter"
         }
-        keyPress $fd "enter"
       }
     }
   }
