@@ -1,6 +1,5 @@
 [Unit]
 Description=piPa55 password manager
-Requires=usb_gadget.service
 
 [Service]
 Type=forking

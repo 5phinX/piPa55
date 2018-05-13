@@ -178,7 +178,7 @@ proc send_post_response {sock uri_target uri_params protocol headers} {
           puts $fd "none"
         }
         close $fd
-        set messages "<div class=\"success_message\">Password [dict get $post_vars passName] generated</div>"
+        set messages "<div class=\"success_message\">Password [dict get $post_vars passName] generated<br />Generated password: $generated_password</div>"
       }
     }
   } elseif { ![catch [list dict get $post_vars deletePass]] } { ;# Delete a password from storage
@@ -242,7 +242,6 @@ proc serve_index {sock {messages ""}} {
 }
 
 # Start a server
-socket -server accept_connection -myaddr 192.168.148.1 80
-
+socket -server accept_connection 80
 # Wait forever
 vwait forever
