@@ -5,9 +5,6 @@
 # Description:
 #   The keyboard is activated by toggling the caps lock on and off within 2 seconds
 
-# Load the scancodes
-source keymap_us.tcl
-
 # Initialize global variables
 set countdown_start 0
 set keyboard_activated 0
@@ -27,6 +24,20 @@ proc processData {fd} {
   } elseif { $caps_bit == 0 } {
     if { $keyboard_activated == 1 && [expr [clock seconds] - $countdown_start] <= 2 } {
       set keyboard_activated 0
+
+      # Load the scancodes
+      if { [info exists scancodes] } {
+        unset scancodes
+      }
+      if { [file exists "./selected_keymap"] } {
+        set fin [open "./selected_keymap" r]
+        set keymap [gets $fin]
+        close $fin
+      } else {
+        set keymap "us"
+      }
+      source "keymap_$keymap.tcl"
+
       # Verify if the selected password file exists
       if { [file exists "/tmp/piPa55_selected_password"] } {
         set fin [open "/tmp/piPa55_selected_password" r]
