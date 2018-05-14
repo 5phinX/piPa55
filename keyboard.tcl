@@ -26,9 +26,6 @@ proc processData {fd} {
       set keyboard_activated 0
 
       # Load the scancodes
-      if { [info exists scancodes] } {
-        unset scancodes
-      }
       if { [file exists "./selected_keymap"] } {
         set fin [open "./selected_keymap" r]
         set keymap [gets $fin]
@@ -55,15 +52,15 @@ proc processData {fd} {
           # Type in all the data
           if { $separator != "none" } {
             for { set i 0 } { $i < [string length $username] } { incr i } {
-              keyPress $fd [string index $username $i]
+              keyPress $fd [string index $username $i] $scancodes
             }
-            keyPress $fd $separator
+            keyPress $fd $separator $scancodes
           }
           for { set i 0 } { $i < [string length $password] } { incr i } {
-            keyPress $fd [string index $password $i]
+            keyPress $fd [string index $password $i] $scancodes
           }
           if { $key_after != "none" } {
-            keyPress $fd $key_after
+            keyPress $fd $key_after $scancodes
           }
         }
       } else { ;# Try default password
@@ -72,9 +69,9 @@ proc processData {fd} {
           set password [gets $fin]
           close $fin
           for { set i 0 } { $i < [string length $password] } { incr i } {
-            keyPress $fd [string index $password $i]
+            keyPress $fd [string index $password $i] $scancodes
           }
-          keyPress $fd "enter"
+          keyPress $fd "enter" $scancodes
         }
       }
     }
@@ -82,8 +79,7 @@ proc processData {fd} {
 }
 
 # Press a key
-proc keyPress {fd key} {
-  global scancodes
+proc keyPress {fd key scancodes} {
 
   if { $key == "tab" } {
     # Press TAB
