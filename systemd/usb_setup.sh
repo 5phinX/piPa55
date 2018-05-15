@@ -51,8 +51,25 @@ ls /sys/class/udc > UDC
 # Go back to current working directory
 cd $CURDIR
 
+# Wait for the usb0 interface to come up
+ETH_CHECK_START=$(date +%s)
+while [ 1 ]; do
+  tmp=$(ip addr | grep "192.168.148.1/24")
+  if [ $? -eq 0 ]; then
+    echo "USB ethernet up"
+    break
+  fi
+  let tmp=$(date +%s)-$ETH_CHECK_START
+  if [ $tmp -gt 30 ]; then
+    echo "Ethernet is not up!"
+    exit 1
+  fi
+done
+
 # Configure DHCP server for USB ethernet
 dnsmasq -C ./dhcpd.conf 
 
 # Set the configure flag
 echo 1 > /tmp/usb_gadget_configured
+
+exit 0
