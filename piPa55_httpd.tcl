@@ -198,6 +198,13 @@ proc send_post_response {sock uri_target uri_params protocol headers} {
     } else {
       set messages "<div class=\"error_messages\">Default password must be provided</div>"
     }
+  } elseif { ![catch [list dict get $post_vars selectKeymap]] } { ;# Set keymap
+    if { [string length [dict get $post_vars selected_keymap]] > 0 } {
+      set fd [open "./selected_keymap" w]
+      puts -nonewline $fd [dict get $post_vars selected_keymap]
+      close $fd
+      set messages "<div class=\"success_message\">Keymap '[dict get $post_vars selected_keymap]' selected</div>"
+    }
   }
 
 
@@ -231,9 +238,24 @@ proc serve_index {sock {messages ""}} {
     }
   }
 
+  # List all installed keymaps
+  set html_keymap_list ""
+  if { ![catch [list glob "./keymap_*.tcl"]] } {
+    set keymap_list [glob "./keymap_*.tcl"]
+    foreach keymap $keymap_list {
+      # Leave only the keymap
+      set keymap_end [expr [string first "." $keymap 2] - 1]
+      set keymap_start [expr [string first "keymap_" $keymap] + [string length "keymap_"]]
+      set keymap_name [string range $keymap $keymap_start $keymap_end]
+      set html_keymap_list "$html_keymap_list<option value=\"$keymap_name\">$keymap_name</option>"
+    }
+  }
+
   # Replace <fillSelect1> and <fillSelect2> with password list
   set index_contents [string replace $index_contents [string first "<fillSelect1>" $index_contents] [expr [string length "<fillSelect1>"] + [string first "<fillSelect1>" $index_contents]] $html_pass_list]
   set index_contents [string replace $index_contents [string first "<fillSelect2>" $index_contents] [expr [string length "<fillSelect2>"] + [string first "<fillSelect2>" $index_contents]] $html_pass_list]
+
+  set index_contents [string replace $index_contents [string first "<fillKeymaps>" $index_contents] [expr [string length "<fillKeymaps>"] + [string first "<fillKeymaps>" $index_contents]] $html_keymap_list]
 
   # Replace <messages> with messages to pass to the user
   set index_contents [string replace $index_contents [string first "<messages>" $index_contents] [expr [string length "<messages>"] + [string first "<messages>" $index_contents]] $messages]

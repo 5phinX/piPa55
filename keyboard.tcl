@@ -5,9 +5,6 @@
 # Description:
 #   The keyboard is activated by toggling the caps lock on and off within 2 seconds
 
-# Load the scancodes
-source keymap_us.tcl
-
 # Initialize global variables
 set countdown_start 0
 set keyboard_activated 0
@@ -27,6 +24,17 @@ proc processData {fd} {
   } elseif { $caps_bit == 0 } {
     if { $keyboard_activated == 1 && [expr [clock seconds] - $countdown_start] <= 2 } {
       set keyboard_activated 0
+
+      # Load the scancodes
+      if { [file exists "./selected_keymap"] } {
+        set fin [open "./selected_keymap" r]
+        set keymap [gets $fin]
+        close $fin
+      } else {
+        set keymap "us"
+      }
+      source "keymap_$keymap.tcl"
+
       # Verify if the selected password file exists
       if { [file exists "/tmp/piPa55_selected_password"] } {
         set fin [open "/tmp/piPa55_selected_password" r]
@@ -44,15 +52,15 @@ proc processData {fd} {
           # Type in all the data
           if { $separator != "none" } {
             for { set i 0 } { $i < [string length $username] } { incr i } {
-              keyPress $fd [string index $username $i]
+              keyPress $fd [string index $username $i] $scancodes
             }
-            keyPress $fd $separator
+            keyPress $fd $separator $scancodes
           }
           for { set i 0 } { $i < [string length $password] } { incr i } {
-            keyPress $fd [string index $password $i]
+            keyPress $fd [string index $password $i] $scancodes
           }
           if { $key_after != "none" } {
-            keyPress $fd $key_after
+            keyPress $fd $key_after $scancodes
           }
         }
       } else { ;# Try default password
@@ -61,9 +69,9 @@ proc processData {fd} {
           set password [gets $fin]
           close $fin
           for { set i 0 } { $i < [string length $password] } { incr i } {
-            keyPress $fd [string index $password $i]
+            keyPress $fd [string index $password $i] $scancodes
           }
-          keyPress $fd "enter"
+          keyPress $fd "enter" $scancodes
         }
       }
     }
@@ -71,8 +79,7 @@ proc processData {fd} {
 }
 
 # Press a key
-proc keyPress {fd key} {
-  global scancodes
+proc keyPress {fd key scancodes} {
 
   if { $key == "tab" } {
     # Press TAB
