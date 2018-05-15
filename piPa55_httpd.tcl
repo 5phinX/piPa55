@@ -8,6 +8,9 @@
 # Maximum time to read the request (seconds)
 set http_timeout 10
 
+# HTTP document root
+set document_root "./http_docs"
+
 # Create URL decode map
 lappend url_decode + { } ;# Manually add mapping + -> ' '
 for {set i 0} {$i < 256} {incr i} {
@@ -223,7 +226,7 @@ proc send_post_response {sock uri_target uri_params protocol headers} {
 # Serve index.html
 proc serve_index {sock {messages ""}} {
   # Read the index.html file
-  set fd [open "index.html"]
+  set fd [open "$document_root/index.html"]
   set index_contents [read $fd]
   close $fd
 
@@ -240,8 +243,8 @@ proc serve_index {sock {messages ""}} {
 
   # List all installed keymaps
   set html_keymap_list ""
-  if { ![catch [list glob "./keymap_*.tcl"]] } {
-    set keymap_list [glob "./keymap_*.tcl"]
+  if { ![catch [list glob "./keymaps/keymap_*.tcl"]] } {
+    set keymap_list [glob "./keymaps/keymap_*.tcl"]
     foreach keymap $keymap_list {
       # Leave only the keymap
       set keymap_end [expr [string first "." $keymap 2] - 1]
@@ -264,6 +267,6 @@ proc serve_index {sock {messages ""}} {
 }
 
 # Start a server
-socket -server accept_connection 80
+socket -server accept_connection -myaddr 192.168.148.1 80
 # Wait forever
 vwait forever

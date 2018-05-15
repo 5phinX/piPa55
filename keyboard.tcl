@@ -33,7 +33,7 @@ proc processData {fd} {
       } else {
         set keymap "us"
       }
-      source "keymap_$keymap.tcl"
+      source "keymaps/keymap_$keymap.tcl"
 
       # Verify if the selected password file exists
       if { [file exists "/tmp/piPa55_selected_password"] } {

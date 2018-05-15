@@ -1,0 +1,11 @@
+[Unit]
+Description=piPa55 password manager
+
+[Service]
+Type=forking
+ExecStart=/root/piPa55/systemd/start_piPa55.sh
+ExecStop=/root/piPa55/systemd/stop_piPa55.sh
+ExecReload=/root/piPa55/systemd/restart_piPa55.sh
+
+[Install]
+WantedBy=multi-user.target
