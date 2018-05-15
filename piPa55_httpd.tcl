@@ -225,6 +225,8 @@ proc send_post_response {sock uri_target uri_params protocol headers} {
 
 # Serve index.html
 proc serve_index {sock {messages ""}} {
+  global document_root
+
   # Read the index.html file
   set fd [open "$document_root/index.html"]
   set index_contents [read $fd]

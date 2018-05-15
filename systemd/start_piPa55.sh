@@ -25,6 +25,8 @@ else
   done
 fi
 
+cd /root/piPa55
+
 tclsh /root/piPa55/piPa55_httpd.tcl &
 # Save HTTP server PID
 echo $$ > /tmp/piPa55_httpd.pid
