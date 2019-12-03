@@ -54,8 +54,9 @@ cd $CURDIR
 # Wait for the usb0 interface to come up
 ETH_CHECK_START=$(date +%s)
 while [ 1 ]; do
-  tmp=$(ip addr | grep "192.168.148.1/24")
+  tmp=$(ip link | grep "usb0")
   if [ $? -eq 0 ]; then
+    ip addr add 192.168.148.1/24 dev usb0
     echo "USB ethernet up"
     break
   fi
