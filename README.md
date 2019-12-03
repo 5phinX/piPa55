@@ -53,6 +53,8 @@ ln -s /root/piPa55/systemd/piPa55.service /etc/systemd/system/piPa55.service
 
 Now, the service can be enabled by `systemctl enable piPa55` and started by `systemctl start piPa55`.
 
+An empty directory `/root/piPa55/pass_storage` must be created.
+
 ## Configuration
 
 Password management is done via embedded HTTP server.
