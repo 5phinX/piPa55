@@ -32,7 +32,14 @@ Add this statement to your `boot/cmdline.txt`:
 modules-load=dwc2,libcomposite
 ```
 
+Next line must also be added to `/boot/config.txt`:
+
+```
+dtoverlay=dwc2
+```
+
 piPa55 is written mostly in Tcl (with a few bash scripts), so `tcl` package must be installed.
+Another required package is `dnsmasq` for the DHCP server to work correctly.
 
 ## Installation
 
@@ -41,10 +48,12 @@ At current state, piPa55 can only work when installed in `/root/piPa55`.
 The systemd unit is in [piPa55.service](./piPa55.service).
 To register the unit with the systemd, create a symlink:
 ```
-ln -s /root/piPa55/piPa55.service /etc/systemd/system/piPa55.service
+ln -s /root/piPa55/systemd/piPa55.service /etc/systemd/system/piPa55.service
 ```
 
 Now, the service can be enabled by `systemctl enable piPa55` and started by `systemctl start piPa55`.
+
+An empty directory `/root/piPa55/pass_storage` must be created.
 
 ## Configuration
 
