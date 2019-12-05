@@ -13,13 +13,12 @@ cd piPa55
 # Set vendor and product IDs
 #echo 0x1d6b > idVendor  # Linux Foundation
 #echo 0x0104 > idProduct # Multifunction Composite Gadget
-echo 0x04b3 > idVendor
-echo 0x4010 > idProduct
+echo 0x1d6b > idVendor
+echo 0x0137 > idProduct
 echo 0x0100 > bcdDevice # v1.0.0
 echo 0x0200 > bcdUSB    # USB2
 
 # RNDIS stuff
-echo "0x80" > configs/c.1/bmAttributes
 echo "1" > os_desc/use
 echo "0xcd" > os_desc/b_vendor_code
 echo "MSFT100" > os_desc/qw_sign
@@ -31,15 +30,15 @@ echo "5phinX"                  > strings/0x409/manufacturer
 echo "piPa55 password manager" > strings/0x409/product
 
 # Configure gadget functionality
-mkdir -p functions/hid.0 # Keyboard
+mkdir -p functions/hid.1 # Keyboard
 mkdir -p functions/rndis.0 # Ethernet
 #mkdir -p functions/mass_storage.0 # Mass storage
 
 # USB keyboard
-echo 1 > functions/hid.0/protocol
-echo 1 > functions/hid.0/subclass
-echo 8 > functions/hid.0/report_length
-echo -ne \\x05\\x01\\x09\\x06\\xa1\\x01\\x05\\x07\\x19\\xe0\\x29\\xe7\\x15\\x00\\x25\\x01\\x75\\x01\\x95\\x08\\x81\\x02\\x95\\x01\\x75\\x08\\x81\\x03\\x95\\x05\\x75\\x01\\x05\\x08\\x19\\x01\\x29\\x05\\x91\\x02\\x95\\x01\\x75\\x03\\x91\\x03\\x95\\x06\\x75\\x08\\x15\\x00\\x25\\x65\\x05\\x07\\x19\\x00\\x29\\x65\\x81\\x00\\xc0 > functions/hid.0/report_desc
+echo 1 > functions/hid.1/protocol
+echo 1 > functions/hid.1/subclass
+echo 8 > functions/hid.1/report_length
+echo -ne \\x05\\x01\\x09\\x06\\xa1\\x01\\x05\\x07\\x19\\xe0\\x29\\xe7\\x15\\x00\\x25\\x01\\x75\\x01\\x95\\x08\\x81\\x02\\x95\\x01\\x75\\x08\\x81\\x03\\x95\\x05\\x75\\x01\\x05\\x08\\x19\\x01\\x29\\x05\\x91\\x02\\x95\\x01\\x75\\x03\\x91\\x03\\x95\\x06\\x75\\x08\\x15\\x00\\x25\\x65\\x05\\x07\\x19\\x00\\x29\\x65\\x81\\x00\\xc0 > functions/hid.1/report_desc
 
 # Mass storage
 #mount -o loop,ro -t vfat /root/piPa55/usb-disk.img /mnt
@@ -61,11 +60,15 @@ echo "5162001" > functions/rndis.0/os_desc/interface.rndis/sub_compatible_id
 mkdir -p configs/c.1/strings/0x409
 echo "Config 1: USB keyboard and ethernet" > configs/c.1/strings/0x409/configuration
 echo 250 > configs/c.1/MaxPower
+echo "0x80" > configs/c.1/bmAttributes
+ln -s configs/c.1 os_desc
 ln -s functions/rndis.0 configs/c.1/
-ln -s functions/hid.0 configs/c.1/
-ln -s functions/mass_storage.0 configs/c.1/
+ln -s functions/hid.1 configs/c.1/
+echo 0xEF > bDeviceClass
+echo 0x02 > bDeviceSubClass
+echo 0x01 > bDeviceProtocol
 
-# Enable USB gadget
+# Connect the USB gadget
 ls /sys/class/udc > UDC
 
 # Go back to current working directory

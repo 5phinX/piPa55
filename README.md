@@ -71,3 +71,11 @@ This is usually the password used to log into the PC.
 The keyboard emulator is triggered by switching CAPS-lock on and off within 2 seconds.
 The CAPS-lock key is not used by many people and this will give it a purpose.
 Moreover, triggering by turning the CAPS-lock on and off still retains the former purpose of CAPS-lock if needed.
+
+# Credits
+
+The USB composite device was set up according to following sources:
+
+[https://gist.github.com/Gadgetoid/c52ee2e04f1cd1c0854c3e77360011e2](https://gist.github.com/Gadgetoid/c52ee2e04f1cd1c0854c3e77360011e2)
+
+[https://threadsec.wordpress.com/raspberry-pi-zero-usb-composite-gadget/](https://threadsec.wordpress.com/raspberry-pi-zero-usb-composite-gadget/)
