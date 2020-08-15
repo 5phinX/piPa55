@@ -90,7 +90,7 @@ proc send_get_response {sock uri_target uri_params protocol headers} {
   # Ignore target and serve index.html
   puts $sock "$protocol 200 OK"
   puts $sock ""
-  serve_index $sock
+  serve_index $sock "" $uri_params
   close $sock
 }
 
@@ -121,13 +121,25 @@ proc send_post_response {sock uri_target uri_params protocol headers} {
   }
 
   # Process form data
-  if { ![catch [list dict get $post_vars selectPass]] } { ;# Select a password
+  if { ![catch [list dict get $post_vars selectPass]] || ![catch [list dict get $post_vars delayedPasswordType]] } { ;# Select a password
     # Verify if the password is provided
     if { [string length [dict get $post_vars selected_pass]] > 0 } {
       set fd [open "/tmp/piPa55_selected_password" w]
       puts -nonewline $fd [dict get $post_vars selected_pass]
       close $fd
-      set messages "<div class=\"success_message\">Password [dict get $post_vars selected_pass] selected</div>"
+      # Open password file and read first two lines
+      set fd [open "pass_storage/[dict get $post_vars selected_pass]" r]
+      set username [gets $fd]
+      set separator [gets $fd]
+      close $fd
+      set messages "<div class=\"success_message\">Password [dict get $post_vars selected_pass] selected<br />Username: $username<br />Key after username: $separator</div>"
+      if { [string length [dict get $post_vars typeDelay]] > 0 && ![catch [list dict get $post_vars delayedPasswordType]] } {
+        set ipc_sock [socket 127.0.0.1 1100]
+        puts $ipc_sock [expr [dict get $post_vars typeDelay]*1000] ;# Send delay in ms
+        flush $ipc_sock
+        close $ipc_sock
+        set messages "$messages<div class=\"success_message\">Selected password will be typed after [dict get $post_vars typeDelay] seconds</div>"
+      }
     } else {
       set messages "<div class=\"error_message\">No password selected</div>"
     }
@@ -208,6 +220,13 @@ proc send_post_response {sock uri_target uri_params protocol headers} {
       close $fd
       set messages "<div class=\"success_message\">Keymap '[dict get $post_vars selected_keymap]' selected</div>"
     }
+  } elseif { ![catch [list dict get $post_vars SetCaps]] } { ;# Save caps lock settings
+    if { [string length [dict get $post_vars capsEnabled]] > 0 } {
+      set fd [open "settings/capsEnable.tcl" w]
+      puts $fd "set capsEnabled [dict get $post_vars capsEnabled]"
+      close $fd
+      set messages "<div class=\"success_message\">CAPS lock settings updated</div>"
+    }
   }
 
 
@@ -224,18 +243,35 @@ proc send_post_response {sock uri_target uri_params protocol headers} {
 }
 
 # Serve index.html
-proc serve_index {sock {messages ""}} {
+proc serve_index {sock {messages ""} {uri_params ""}} {
   global document_root
+  global url_decode
 
   # Read the index.html file
   set fd [open "$document_root/index.html"]
   set index_contents [read $fd]
   close $fd
 
+  set get_data [split $uri_params "&"]
+  set get_vars [dict create]
+  foreach get_field $get_data {
+    # Divide variable name and value
+    set tmp [split $get_field "="]
+    # URL decode both and put them in the dictionary
+    dict set get_vars [string map $url_decode [lindex $tmp 0]] [string map $url_decode [lindex $tmp 1]]
+  }
+  # Free the unused variables
+  unset get_data
+  unset -nocomplain tmp
+
   # List all the stored passwords and compile an HTML list
+  set pass_filter "pass_storage/*"
+  if { ![catch [list dict get $get_vars search]] } { ;# Select a password
+    set pass_filter "pass_storage/*[dict get $get_vars search]*"
+  }
   set html_pass_list ""
-  if { ![catch [list glob "pass_storage/*"]] } {
-    set pass_list [glob "pass_storage/*"]
+  if { ![catch [list glob $pass_filter]] } {
+    set pass_list [glob $pass_filter]
     foreach pass $pass_list {
       # Leave only the filename, get rid of path
       set pass_name [string range $pass [string last "/" $pass]+1 end]
@@ -261,6 +297,14 @@ proc serve_index {sock {messages ""}} {
   set index_contents [string replace $index_contents [string first "<fillSelect2>" $index_contents] [expr [string length "<fillSelect2>"] + [string first "<fillSelect2>" $index_contents]] $html_pass_list]
 
   set index_contents [string replace $index_contents [string first "<fillKeymaps>" $index_contents] [expr [string length "<fillKeymaps>"] + [string first "<fillKeymaps>" $index_contents]] $html_keymap_list]
+
+  # Fill caps lock settings
+  source "settings/capsEnable.tcl"
+  if { $capsEnabled == 1 } {
+    set index_contents [string replace $index_contents [string first "<fillCapsSettings>" $index_contents] [expr [string length "<fillCapsSettings>"] + [string first "<fillCapsSettings>" $index_contents]] "<input type=\"radio\" name=\"capsEnabled\" value=\"0\" />disabled&nbsp;<input type=\"radio\" name=\"capsEnabled\" value=\"1\" checked=\"checked\" />enabled"]
+  } else {
+    set index_contents [string replace $index_contents [string first "<fillCapsSettings>" $index_contents] [expr [string length "<fillCapsSettings>"] + [string first "<fillCapsSettings>" $index_contents]] "<input type=\"radio\" name=\"capsEnabled\" value=\"0\" checked=\"checked\" />disabled&nbsp;<input type=\"radio\" name=\"capsEnabled\" value=\"1\" />enabled"]
+  }
 
   # Replace <messages> with messages to pass to the user
   set index_contents [string replace $index_contents [string first "<messages>" $index_contents] [expr [string length "<messages>"] + [string first "<messages>" $index_contents]] $messages]

@@ -1,8 +1,13 @@
 <!doctype html>
 <html>
   <head>
+    <meta http-equiv="content-type" content="text/html" />
     <title>Hello World</title>
     <style type="text/css">
+      body {
+        background: black;
+        color: gray;
+      }
       .error_message {
         background : red;
       }
@@ -18,54 +23,94 @@
     <h1>Hello World!</h1>
     <h3>piPa55 Tcl HTTP server</h3>
 
-    <h3>Select password to type</h3>
-    <form action="/?" method="post">
-      <select name="selected_pass">
-      <fillSelect1>
-      </select>
-      <input name="selectPass" type="Submit" value="Select password" />
-    </form>
+    <div id="accordion">
+	    <h3>Select password to type</h3>
+	    <div>
+	    <form action="/?" method="post">
+	      <select name="selected_pass">
+	      <fillSelect1>
+	      </select>
+	      <input name="selectPass" type="Submit" value="Select password" />
+	      <div>
+	      <br />
+	      Delay: <input type="number" name="typeDelay" />&nbsp;s&nbsp;&nbsp;
+	      <input type="submit" name="delayedPasswordType" value="Type password after delay" />
+	      </div>
+	    </form>
+	    </div>
+	    <h4>Search passwords</h4>
+	    <div>
+              <form action="/" method="get">
+                <input type="text" name="search" />
+		<input type="submit" value="Search" />
+		<br />
+		<a href="http://192.168.148.1/">Clear search</a>
+              </form>
+	    </div>
 
-    <h3>Select keymap</h3>
-    <form action="/?" method="post">
-      <select name="selected_keymap">
-      <fillKeymaps>
-      </select>
-      <input name="selectKeymap" type="Submit" value="Select keymap" />
-    </form>
+	    <h3>Password typing</h3>
+	    <div>
+            <form action="?" method="post">
+              Type password upon CAPS lock toggle:<br />
+	      <br />
+	      <div>
+	      <fillCapsSettings> &nbsp;&nbsp;
+	      <input type="submit" name="SetCaps" value="Save settings" />
+	      </div>
+	    </form>
+	    </div>
 
-    <h3>Generate new password</h3>
-    <form action="/?" method="post">
-      Password name: <input name="passName" type="text" /><br />
-      Username: <input name="username" type="text" /><br />
-      Which key to press after username:<br />
-      <input name="username_separator" type="radio" value="tab" checked="checked"> Tab<br />
-      <input name="username_separator" type="radio" value="enter"> Enter<br />
-      <input name="username_separator" type="radio" value="none"> Do not type username<br />
-      <br />
-      Password (will be generated randomly if left blank): <input name="pass" type="password" /><br />
-      Password composition:<br />
-      <input name="alpha" type="checkbox" value="alpha" checked="checked" disabled="disabled" /> Letters<br />
-      <input name="numeric" type="checkbox" value="numeric" /> Numbers<br />
-      <input name="special" type="checkbox" value="special" /> Special characters<br />
-      Password length: <input name="length" type="number" min="8" max="128" value="8" /><br />
-      <input name="key_after_pass" type="checkbox" checked="checked" value="enter" /> Press enter after the password<br />
-      <input name="genPass" type="Submit" value="Generate password" />
-    </form>
+	    <h3>Select keymap</h3>
+	    <div>
+	    <form action="/?" method="post">
+	      <select name="selected_keymap">
+	      <fillKeymaps>
+	      </select>
+	      &nbsp;
+	      <input name="selectKeymap" type="Submit" value="Select keymap" />
+	    </form>
+	    </div>
 
-    <h3>Delete a password</h3>
-    <form action="/?" method="post">
-      <select name="selected_pass">
-      <fillSelect2>
-      </select>
-      <input name="deletePass" type="Submit" value="Delete password from storage" />
-    </form>
+	    <h3>Generate new password</h3>
+	    <div>
+	    <form action="/?" method="post">
+	      Password name: <input name="passName" type="text" /><br />
+	      Username: <input name="username" type="text" /><br />
+	      Which key to press after username:<br />
+	      <input name="username_separator" type="radio" value="tab" checked="checked"> Tab<br />
+	      <input name="username_separator" type="radio" value="enter"> Enter<br />
+	      <input name="username_separator" type="radio" value="none"> Do not type username<br />
+	      <br />
+	      Password (will be generated randomly if left blank): <input name="pass" type="password" /><br />
+	      Password composition:<br />
+	      <input name="alpha" type="checkbox" value="alpha" checked="checked" disabled="disabled" /> Letters<br />
+	      <input name="numeric" type="checkbox" value="numeric" /> Numbers<br />
+	      <input name="special" type="checkbox" value="special" /> Special characters<br />
+	      Password length: <input name="length" type="number" min="8" max="128" value="8" /><br />
+	      <input name="key_after_pass" type="checkbox" checked="checked" value="enter" /> Press enter after the password<br />
+	      <input name="genPass" type="Submit" value="Generate password" />
+	    </form>
+	    </div>
 
-    <h3>Set default password</h3>
-    <p>This password will be selected by default upon device startup</p>
-    <form action="/?" method="post">
-      <input name="pass" type="password" />
-      <input name="setDefaultPass" type="Submit" value="Set default password" />
-    </form>
+	    <h3>Delete a password</h3>
+	    <div>
+	    <form action="/?" method="post">
+	      <select name="selected_pass">
+	      <fillSelect2>
+	      </select>
+	      <input name="deletePass" type="Submit" value="Delete password from storage" />
+	    </form>
+	    </div>
+
+	    <h3>Set default password</h3>
+	    <div>
+	    <p>This password will be selected by default upon device startup</p>
+	    <form action="/?" method="post">
+	      <input name="pass" type="password" />
+	      <input name="setDefaultPass" type="Submit" value="Set default password" />
+	    </form>
+	    </div>
+    </div> <!-- accordion -->
+
   </body>
 </html>
