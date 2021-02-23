@@ -90,7 +90,7 @@ proc send_get_response {sock uri_target uri_params protocol headers} {
   # Ignore target and serve index.html
   puts $sock "$protocol 200 OK"
   puts $sock ""
-  serve_index $sock
+  serve_index $sock "" $uri_params
   close $sock
 }
 
@@ -224,18 +224,35 @@ proc send_post_response {sock uri_target uri_params protocol headers} {
 }
 
 # Serve index.html
-proc serve_index {sock {messages ""}} {
+proc serve_index {sock {messages ""} {uri_params ""}} {
   global document_root
+  global url_decode
 
   # Read the index.html file
   set fd [open "$document_root/index.html"]
   set index_contents [read $fd]
   close $fd
 
+  set get_data [split $uri_params "&"]
+  set get_vars [dict create]
+  foreach get_field $get_data {
+    # Divide variable name and value
+    set tmp [split $get_field "="]
+    # URL decode both and put them in the dictionary
+    dict set get_vars [string map $url_decode [lindex $tmp 0]] [string map $url_decode [lindex $tmp 1]]
+  }
+  # Free the unused variables
+  unset get_data
+  unset -nocomplain tmp
+
   # List all the stored passwords and compile an HTML list
+  set pass_filter "pass_storage/*"
+  if { ![catch [list dict get $get_vars search]] } { ;# Select a password
+    set pass_filter "pass_storage/*[dict get $get_vars search]*"
+  }
   set html_pass_list ""
-  if { ![catch [list glob "pass_storage/*"]] } {
-    set pass_list [glob "pass_storage/*"]
+  if { ![catch [list glob $pass_filter]] } {
+    set pass_list [glob $pass_filter]
     foreach pass $pass_list {
       # Leave only the filename, get rid of path
       set pass_name [string range $pass [string last "/" $pass]+1 end]
