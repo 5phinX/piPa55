@@ -127,7 +127,12 @@ proc send_post_response {sock uri_target uri_params protocol headers} {
       set fd [open "/tmp/piPa55_selected_password" w]
       puts -nonewline $fd [dict get $post_vars selected_pass]
       close $fd
-      set messages "<div class=\"success_message\">Password [dict get $post_vars selected_pass] selected</div>"
+      # Open password file and read first two lines
+      set fd [open "pass_storage/[dict get $post_vars selected_pass]" r]
+      set username [gets $fd]
+      set separator [gets $fd]
+      close $fd
+      set messages "<div class=\"success_message\">Password [dict get $post_vars selected_pass] selected<br />Username: $username<br />Key after username: $separator</div>"
     } else {
       set messages "<div class=\"error_message\">No password selected</div>"
     }
