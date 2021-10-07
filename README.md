@@ -72,6 +72,12 @@ The keyboard emulator is triggered by switching CAPS-lock on and off within 2 se
 The CAPS-lock key is not used by many people and this will give it a purpose.
 Moreover, triggering by turning the CAPS-lock on and off still retains the former purpose of CAPS-lock if needed.
 
+CAPS-lock sensitivity can be turned off via the web interface.
+
+Another method to type passwords is to configure a time delay in the web interface and triggering it by clicking on *Type Password after delay* button.
+This way the password is selected and queued for delayed typing at the same time.
+Using this method, piPa55 is usable also on devices without physical keyboards such as android phones.
+
 # Credits
 
 The USB composite device was set up according to following sources:
